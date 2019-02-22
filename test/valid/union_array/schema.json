@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "allOf": [
+        {
+            "$ref": "#/definitions/union_array"
+        }
+    ],
+    "definitions": {
+        "union_array" : {
+            "type" : "array",
+            "items" : {
+                "type" : [
+                    "string",
+                    "number"
+                ]
+            }
+        }
+    }
+}

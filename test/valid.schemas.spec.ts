@@ -60,6 +60,11 @@ describe("schema tests", () => {
         testSchemaValidPath("union")
         done()
     })
+
+    it.only("union_array", (done) => {
+        testSchemaValidPath("union_array")
+        done()
+    })
 })
 
 

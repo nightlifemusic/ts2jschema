@@ -1,9 +1,9 @@
 
-import Ast, {TypeGuards, SyntaxKind, UnionTypeNode, ExportDeclaration, InterfaceDeclaration, NamespaceDeclaration, Node, SourceFile, Statement, TypeAliasDeclaration, VariableDeclarationKind, Scope, FileNotFoundError, PropertySignature, ts, TypeReferenceNode, Identifier, EntityName } from "ts-simple-ast";
+import Ast, {TypeGuards, SyntaxKind, UnionTypeNode, ExportDeclaration, InterfaceDeclaration, NamespaceDeclaration, Node, SourceFile, Statement, TypeAliasDeclaration, VariableDeclarationKind, Scope, FileNotFoundError, PropertySignature, ts, TypeReferenceNode, Identifier, EntityName, ArrayTypeNode } from "ts-simple-ast";
 import { JSONSchema4, JSONSchema7, JSONSchema6, JSONSchema4Type, JSONSchema6Type, JSONSchema7Type, JSONSchema7Version, JSONSchema7Definition, JSONSchema7TypeName } from 'json-schema';
 import * as _ from 'lodash'
 import { Interface } from "readline";
-import { isIdentifier, isInterfaceDeclaration } from "typescript";
+import { isIdentifier, isInterfaceDeclaration, UnionType } from "typescript";
 
 export interface StringMap<T> {
     [key : string] : T
@@ -88,9 +88,31 @@ export class Ts2JSchema {
     }
 
     renderTypeAliasDeclaration(td : TypeAliasDeclaration, definitions : StringMap<any>) {
+        
+        if(         td.getChildrenOfKind(SyntaxKind.ArrayType).length > 0) {
+            return this.renderArrayTypeNode(td.getChildrenOfKind(SyntaxKind.ArrayType)[0], definitions)
+        } else if(  td.getChildrenOfKind(SyntaxKind.UnionType).length > 0) {
+            return this.renderUnionTypeNode(td.getChildrenOfKind(SyntaxKind.UnionType)[0], definitions)
+        }
+        
+        // return {
+        //     anyOf : [0].getTypeNodes().map(
+        //         (trn : TypeReferenceNode) => this.extractInterfaceDeclarationFromTypeReferenceNode(trn.getTypeName(), definitions))
+        // }
+    }
+
+    renderArrayTypeNode(at : ArrayTypeNode, definitions : StringMap<any>) {
         return {
-            anyOf : td.getChildrenOfKind(SyntaxKind.UnionType)[0].getTypeNodes().map(
-                (trn : TypeReferenceNode) => this.extractInterfaceDeclarationFromTypeReferenceNode(trn.getTypeName(), definitions))
+            
+
+        }
+    }
+
+    renderUnionTypeNode(ut:UnionTypeNode, definitions : StringMap<any>) {
+        {
+            anyOf : ut.getTypeNodes().map(
+                (trn : TypeReferenceNode) => this.extractInterfaceDeclarationFromTypeReferenceNode(trn.getTypeName(), definitions)
+            )
         }
     }
 
